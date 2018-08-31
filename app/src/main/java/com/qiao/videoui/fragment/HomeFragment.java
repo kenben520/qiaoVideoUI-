@@ -75,6 +75,9 @@ public class HomeFragment extends BaseFragment {
         recyclerView.setAdapter(videoAdapter);
         videoAdapter.addData(videoBeanList);
 
+
+        
+
 //        //触发自动刷新
 //        refreshLayout.autoRefresh();
         refreshLayout.setOnRefreshListener(new OnRefreshListener() {
