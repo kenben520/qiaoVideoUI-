@@ -51,7 +51,7 @@ public abstract class NewsTestCallback<T> extends AbsCallback<T> {
         Type rawType = ((ParameterizedType) type).getRawType();
         if (rawType == BaseModel.class) {
             BaseModel gankResponse = Convert.fromJson(jsonReader, type);
-            if (gankResponse.code==0) {
+            if (gankResponse.code==200) {
                 response.close();
                 //noinspection unchecked
                 return (T) gankResponse;

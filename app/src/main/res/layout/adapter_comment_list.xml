@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:layout_gravity="center_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@mipmap/home_head_icon" />
+
+
+    <LinearLayout
+        android:layout_width="0dp" android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView android:id="@+id/comment_name_tx"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="名称"
+            android:textColor="@color/whiteColor"
+            android:textSize="16sp" />
+        <TextView  android:id="@+id/comment_conntex_tx"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="内容"
+            android:textColor="@color/whiteColor"
+            android:textSize="16sp" />
+        <TextView android:id="@+id/comment_time_tx"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="一个小时"
+            android:textColor="@color/whiteColor"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+
+        <TextView android:id="@+id/comment_tags_tx"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="一个小时" android:drawableTop="@mipmap/home_ike_icon"
+            android:textColor="@color/whiteColor"
+            android:textSize="16sp" />
+</LinearLayout>
