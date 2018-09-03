@@ -30,7 +30,7 @@ import com.qiao.videoui.bean.VideoBean;
 import com.qiao.videoui.tools.Constant;
 import com.qiao.videoui.tools.NewsTestCallback;
 import com.qiao.videoui.tools.utilCode.ScreenUtils;
-import com.qiao.videoui.tools.utilCode.ToastUtils;
+import com.qiao.videoui.view.BasePopupWindow;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnLoadMoreListener;
@@ -58,6 +58,8 @@ public class HomeFragment extends BaseFragment {
     TextView homeCommentBtn;
     @BindView(R.id.home_follow_btn)
     ImageView homeFollowBtn;
+    @BindView(R.id.home_follow_user_img)
+    ImageView homeFollowUserImg;
 
     public static HomeFragment newInstance() {
         HomeFragment fragment = new HomeFragment();
@@ -120,7 +122,6 @@ public class HomeFragment extends BaseFragment {
                     public void run() {
                         loadData();
                         loadCommentListData();
-                        loadCollectionData();
                         loadInterestData();
                         VideoBean bean = new VideoBean();
                         bean.setTitle("title==" + videoBeanList.size());
@@ -159,7 +160,7 @@ public class HomeFragment extends BaseFragment {
                     @Override
                     public void onSuccess(Response<BaseModel<CommentListBean>> response) {
                         commentBean = response.body().data;
-                        if (commentListBean!=null){
+                        if (commentListBean != null) {
                             commentListBean.addAll(commentBean.getList());
                             commentListAdapter.setNewData(commentListBean);
                         }
@@ -168,27 +169,6 @@ public class HomeFragment extends BaseFragment {
                     @Override
                     public void onError(Response<BaseModel<CommentListBean>> response) {
 
-                    }
-                });
-    }
-
-    /**
-     * 收藏
-     */
-    private void loadCollectionData() {
-        String urlr = Constant.url + "collection";
-        OkGo.<BaseModel<JsonModel>>post(urlr)
-                .params("user_id", "")
-                .params("file_id", "")
-                .execute(new NewsTestCallback<BaseModel<JsonModel>>() {
-                    @Override
-                    public void onSuccess(Response<BaseModel<JsonModel>> response) {
-                        ToastUtils.showLong(" 收藏成功");
-                    }
-
-                    @Override
-                    public void onError(Response<BaseModel<JsonModel>> response) {
-                        ToastUtils.showLong(" 收藏失败");
                     }
                 });
     }
@@ -226,8 +206,7 @@ public class HomeFragment extends BaseFragment {
                 .execute(new NewsTestCallback<BaseModel<JsonModel>>() {
                     @Override
                     public void onSuccess(Response<BaseModel<JsonModel>> response) {
-                        // ToastUtils.showLong("点赞成功");
-                        // CommentListBean results = response.body().data;
+                        JsonModel results = response.body().data;
                         // newsAdapter.loadComplete();
                     }
 
@@ -243,21 +222,21 @@ public class HomeFragment extends BaseFragment {
     }
 
     public void shareUI() {
-        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-        View contentView = LayoutInflater.from(getActivity()).inflate(R.layout.window_share_layout, null);
-        //创建并显示popWindow
-        int w = ScreenUtils.getScreenWidth();
-        CustomPopWindow filterPopWindow = new CustomPopWindow.PopupWindowBuilder(getContext())
-                .setView(contentView).size(w, ScreenUtils.getScreenHeight())
-                .create().showAsDropDown(refreshLayout);
+        BasePopupWindow window = new BasePopupWindow(mContext, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        }, homeCommentBtn);
     }
 
     private SmartRefreshLayout commentRefreshLayout;
+
     public void commentWindowUI() {
         commentListAdapter = new CommentListAdapter();
         commentListBean = new ArrayList<>();
         commentListAdapter.addData(commentListBean);
-        if(commentBean!=null){
+        if (commentBean != null) {
             commentListAdapter.setNewData(commentListBean);
         }
         //commentBean.getList();
@@ -268,7 +247,7 @@ public class HomeFragment extends BaseFragment {
         CustomPopWindow filterPopWindow = new CustomPopWindow.PopupWindowBuilder(getContext())
                 .setView(contentView).size(w, ScreenUtils.getScreenHeight())
                 .create().showAsDropDown(refreshLayout);
-        commentRefreshLayout =  contentView.findViewById(R.id.comment_refreshLayout);
+        commentRefreshLayout = contentView.findViewById(R.id.comment_refreshLayout);
         RecyclerView comment_recyclerView = contentView.findViewById(R.id.comment_recyclerView);
         comment_recyclerView.setAdapter(commentListAdapter);
         comment_recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
@@ -306,27 +285,41 @@ public class HomeFragment extends BaseFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-//        null.unbind();
     }
 
-    @OnClick({R.id.home_share_btn, R.id.home_tags_btn, R.id.home_comment_btn,R.id.home_follow_btn})
+    int tags = 1;
+
+    @OnClick({R.id.home_share_btn, R.id.home_tags_btn, R.id.home_comment_btn, R.id.home_follow_user_img})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.home_share_btn:
                 shareUI();
                 break;
             case R.id.home_tags_btn:
-                Drawable drawable = ContextCompat.getDrawable(mContext, R.mipmap.home_un_like_icon);
-                drawable.setBounds( 0, 0, drawable.getMinimumWidth(),drawable.getMinimumHeight());
+                Drawable drawable = null;
+                if (tags == 1) {
+                    tags = 0;
+                    drawable = ContextCompat.getDrawable(mContext, R.mipmap.home_un_like_icon);
+                } else {
+                    tags = 1;
+                    drawable = ContextCompat.getDrawable(mContext, R.mipmap.home_ike_icon);
+                }
+                drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
                 homeTagsBtn.setCompoundDrawables(null, drawable, null, null);
-               // homeTagsBtn.setBackground(ContextCompat.getDrawable(mContext, R.mipmap.home_un_like_icon));
+                // homeTagsBtn.setBackground(ContextCompat.getDrawable(mContext, R.mipmap.home_un_like_icon));
                 break;
             case R.id.home_comment_btn:
                 commentWindowUI();
-                loadCommentListData();
+//                loadCommentListData();
                 break;
-            case R.id.home_follow_btn:
-                homeFollowBtn.setBackground(ContextCompat.getDrawable(mContext,R.mipmap.home_followed_icon));
+            case R.id.home_follow_user_img:
+                if (tags == 1) {
+                    tags = 0;
+                    homeFollowBtn.setBackground(ContextCompat.getDrawable(mContext, R.mipmap.home_follow_icon));
+                } else {
+                    tags = 1;
+                    homeFollowBtn.setBackground(ContextCompat.getDrawable(mContext, R.mipmap.home_followed_icon));
+                }
                 break;
         }
     }
